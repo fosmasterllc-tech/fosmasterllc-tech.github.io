@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Flanagan — Custom kinetic installations, light art, and reliable property building serving Sonoma County. Handyman work for elderly and blind neighbors.">
+  <title>Flanagan | FOS Master LLC - Sonoma County, CA</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600;700&family=Space+Mono:wght@400;700&display=swap');
+
+    :root {
+      --black: #050508;
+      --near-black: #0a0a0f;
+      --aqua: #00FFFF;
+      --aqua-dim: #00cccc;
+      --aqua-glow: rgba(0,255,255,0.15);
+      --aqua-faint: rgba(0,255,255,0.06);
+      --gold: #FFD700;
+      --white: #f0f0f0;
+      --grey: #888;
+      --border: rgba(0,255,255,0.2);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    ::selection {
+      background: var(--aqua);
+      color: var(--black);
+    }
+
+    /* SKIP LINK - accessibility */
+    .skip-link {
+      position: absolute;
+      top: -100px;
+      left: 1rem;
+      background: var(--aqua);
+      color: var(--black);
+      padding: 0.5rem 1rem;
+      font-weight: 700;
+      z-index: 1000;
+      border-radius: 2px;
+      transition: top 0.2s;
+    }
+    .skip-link:focus {
+      top: 0;
+      outline: 3px solid var(--gold);
+    }
+
+    /* INITIAL LOAD ANIMATION */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    header, section, .divider {
+      animation: fadeUp 0.8s ease-out forwards;
+    }
+
+    /* HEADER */
+    header {
+      padding: 5rem 1.5rem 3rem;
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    .eyebrow {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.25em;
+      color: var(--aqua);
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      display: inline-block;
+      border-bottom: 1px solid var(--aqua-dim);
+      padding-bottom: 4px;
+    }
+
+    h1 {
+      font-size: clamp(3rem, 9vw, 5.5rem);
+      font-weight: 700;
+      line-height: 1.0;
+      color: var(--white);
+      margin-bottom: 1.5rem;
+      letter-spacing: -0.03em;
+    }
+
+    h1 span {
+      color: var(--aqua);
+      text-shadow: 0 0 20px var(--aqua-glow);
+    }
+
+    .tagline {
+      font-size: 1.2rem;
+      color: #ccc;
+      max-width: 650px;
+      line-height: 1.7;
+      margin-bottom: 2.5rem;
+    }
+
+    .tagline strong {
+      color: var(--white);
+      font-weight: 600;
+    }
+
+    .contact-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .contact-bar a {
+      color: var(--aqua);
+      text-decoration: none;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.9rem;
+      padding: 0.75rem 1.25rem;
+      border: 1px solid var(--border);
+      background: var(--near-black);
+      border-radius: 2px;
+      transition: all 0.2s ease;
+      letter-spacing: 0.05em;
+    }
+
+    .contact-bar a:hover,
+    .contact-bar a:focus {
+      background: var(--aqua-faint);
+      border-color: var(--aqua);
+      box-shadow: 0 0 15px var(--aqua-glow);
+      transform: translateY(-2px);
+    }
+
+    /* DIVIDER */
+    .divider {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+      margin: 0;
+    }
+
+    /* SECTIONS */
+    section {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 4rem 1.5rem;
+    }
+
+    h2 {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--aqua);
+      margin-bottom: 1.5rem;
+    }
+
+    h3 {
+      font-size: 1.6rem;
+      font-weight: 600;
+      color: var(--white);
+      margin-bottom: 1rem;
+      font-family: 'Space Grotesk', sans-serif;
+      letter-spacing: -0.01em;
+    }
+
+    /* INTRO */
+    .intro-text {
+      font-size: 1.05rem;
+      line-height: 1.8;
+      color: #b0b0b0;
+      margin-bottom: 2rem;
+    }
+
+    .intro-text strong {
+      color: var(--white);
+    }
+
+    /* GALLERY */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      margin-bottom: 2rem;
+    }
+
+    .gallery-item {
+      position: relative;
+      aspect-ratio: 4/3;
+      overflow: hidden;
+      background: var(--near-black);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+    }
+
+    .gallery-item.wide {
+      grid-column: span 2;
+      aspect-ratio: 16/7;
+    }
+
+    .gallery-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), filter 0.5s;
+      filter: grayscale(20%);
+    }
+
+    .gallery-item:hover img,
+    .gallery-item:focus-within img {
+      transform: scale(1.05);
+      filter: grayscale(0%);
+    }
+
+    /* PROJECT DESCRIPTION */
+    .project-desc {
+      font-size: 1rem;
+      color: #a0a0a0;
+      line-height: 1.7;
+      margin-bottom: 2rem;
+      padding-left: 1rem;
+      border-left: 2px solid var(--border);
+    }
+
+    .project-desc strong {
+      color: var(--aqua-dim);
+      font-weight: 400;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.9rem;
+      letter-spacing: 0.05em;
+    }
+
+    /* ABOUT */
+    .about-text {
+      font-size: 1.05rem;
+      line-height: 1.85;
+      color: #b0b0b0;
+    }
+
+    .about-text strong {
+      color: var(--white);
+    }
+
+    /* MANDATE */
+    .mandate {
+      margin-top: 3rem;
+      padding: 1.5rem 2rem;
+      border-left: 4px solid var(--gold);
+      background: rgba(255,215,0,0.03);
+      border-radius: 0 4px 4px 0;
+    }
+
+    .mandate p {
+      font-size: 1rem;
+      color: #ddd;
+      line-height: 1.6;
+    }
+
+    .mandate p strong {
+      color: var(--gold);
+      letter-spacing: 0.05em;
+    }
+
+    /* CONTACT */
+    .contact-block {
+      background: var(--near-black);
+      border: 1px solid var(--border);
+      padding: 3rem 2rem;
+      border-radius: 4px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .contact-block::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--aqua), transparent);
+    }
+
+    .contact-block p {
+      color: #b0b0b0;
+      font-size: 1.05rem;
+      margin-bottom: 2.5rem;
+      line-height: 1.7;
+    }
+
+    .contact-details {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .contact-detail {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .contact-detail .label {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--aqua-dim);
+      min-width: 70px;
+    }
+
+    .contact-detail a,
+    .contact-detail span {
+      font-size: 1.15rem;
+      color: var(--white);
+      text-decoration: none;
+      transition: color 0.2s, text-shadow 0.2s;
+    }
+
+    .contact-detail a:hover,
+    .contact-detail a:focus {
+      color: var(--aqua);
+      text-shadow: 0 0 10px var(--aqua-glow);
+    }
+
+    /* FOOTER */
+    footer {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem 5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      gap: 2rem;
+      border-top: 1px solid var(--border);
+    }
+
+    footer p {
+      font-size: 0.8rem;
+      color: var(--grey);
+      font-family: 'Space Mono', monospace;
+      margin-bottom: 0.5rem;
+    }
+
+    footer .gold-note {
+      color: var(--gold);
+      opacity: 0.8;
+    }
+
+    /* GLOW AMBIENT */
+    .glow-bar {
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--aqua), transparent);
+      opacity: 0.3;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 600px) {
+      .gallery-grid {
+        grid-template-columns: 1fr;
+      }
+      .gallery-item.wide {
+        grid-column: span 1;
+        aspect-ratio: 4/3;
+      }
+      h1 {
+        font-size: 3.2rem;
+      }
+      .contact-block {
+        padding: 2rem 1.5rem;
+      }
+      footer {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <a href="#main" class="skip-link">Skip to main content</a>
+
+  <div class="glow-bar"></div>
+
+  <header>
+    <p class="eyebrow">FOS Master LLC | Petaluma, CA</p>
+    <h1>Flanagan<span>.</span></h1>
+    <p class="tagline">
+      I engineer custom kinetic light installations out of upcycled materials, and I rebuild properties for neighbors who need someone reliable to show up and get it done. <br><br><strong>No formal degrees. Just field-tested mechanics and heavy-duty builds.</strong>
+    </p>
+    <nav class="contact-bar" aria-label="Contact options">
+      <a href="tel:+17075962264" aria-label="Call Flanagan at 707-596-2264">📞 (707) 596-2264</a>
+      <a href="mailto:trimtilltheend@gmail.com" aria-label="Email Flanagan">✉ trimtilltheend@gmail.com</a>
+    </nav>
+  </header>
+
+  <div class="divider"></div>
+
+  <main id="main">
+
+    <!-- INTRO / PHILOSOPHY -->
+    <section aria-labelledby="process-heading">
+      <h2 id="process-heading">Operational Philosophy</h2>
+      <div class="intro-text">
+        <p>
+          I build environments out of materials most people throw away. I integrate fluorescent pigments, UV blacklights, and custom fluid dynamics into salvaged industrial hardware. I treat my neighborhood like a proving ground. Every build is a first—first kinetic fountain, first paving job, first hand-poured stone arch. 
+        </p>
+        <p>
+          <strong>I don't buy materials. I find them. And I don't walk away from an unfinished job.</strong>
+        </p>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- FEATURED INSTALLATION: 3-ZONE FOUNTAIN -->
+    <section aria-labelledby="kinetic-fountain-heading">
+      <h2 id="kinetic-fountain-heading">Project 01 // Kinetic Art</h2>
+      <h3>3-Zone Kinetic Water Architecture</h3>
+      <div class="project-desc">
+        A massive, closed-loop kinetic water feature utilizing dual-spectrum municipal-grade UV tracer dyes (Green Fluorescein & Red Rhodamine) and phosphorescent Strontium Aluminate. Features a 4.5-foot suspended hydraulic hammer, a 12-foot wind-driven steel gyroscope with weeping lines, and a cascading bucket relay. <br><br><strong>POWERED BY A UNIFIED 41-GALLON GRAVITY-EQUALIZED FLUID ENGINE.</strong>
+      </div>
+      <div class="gallery-grid">
+        <!-- 
+          IMAGE PLACEHOLDERS: 
+          The 'onerror' tag ensures that if the image link is broken (before you upload it), 
+          it displays a clean, dark box with a tech grid pattern rather than a broken icon.
+        -->
+        <div class="gallery-item wide">
+          <img src="./img/kinetic-fountain-main.jpg" alt="3-Zone Kinetic Water Installation at night under UV lights" loading="lazy" onerror="this.style.background='repeating-linear-gradient(45deg, #0a0a0f, #0a0a0f 10px, #111 10px, #111 20px)'">
+        </div>
+        <div class="gallery-item">
+          <img src="./img/kinetic-fountain-gyro.jpg" alt="Detail of the red UV reactive weeping gyroscope" loading="lazy" onerror="this.style.background='repeating-linear-gradient(-45deg, #0a0a0f, #0a0a0f 10px, #111 10px, #111 20px)'">
+        </div>
+        <div class="gallery-item">
+          <img src="./img/kinetic-fountain-hammer.jpg" alt="Detail of the 4.5 foot click-clack hammer dumping neon green water" loading="lazy" onerror="this.style.background='repeating-linear-gradient(45deg, #0a0a0f, #0a0a0f 10px, #111 10px, #111 20px)'">
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- HARDSCAPE & FOUNDATIONS -->
+    <section aria-labelledby="hardscape-heading">
+      <h2 id="hardscape-heading">Project 02 // Structural</h2>
+      <h3>Front Yard Proving Ground</h3>
+      <div class="project-desc">
+        Complete property hardscape. Built a hand-dug adobe pond, welded snake head sculpture, hand-poured stone arch, UV-painted flagstone mosaic paths, hand-formed faux boulders, and raised garden beds from salvaged fence lumber. Built in under 3 months, solo.
+      </div>
+      <div class="gallery-grid">
+        <div class="gallery-item">
+          <img src="./img/front-yard-1.jpg" alt="Front yard hardscape project" loading="lazy" onerror="this.style.background='#111'">
+        </div>
+        <div class="gallery-item">
+          <img src="./img/front-yard-2.jpg" alt="Front yard hardscape project" loading="lazy" onerror="this.style.background='#111'">
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- COMMERCIAL SCALE -->
+    <section aria-labelledby="commercial-heading">
+      <h2 id="commercial-heading">Project 03 // Commercial</h2>
+      <h3>Coastal Barn Build</h3>
+      <div class="project-desc">
+        Custom barn build near the coast by the Guard station. Managed a crew of six for full interior and exterior finishing, including structural foundations, electrical runs, and a massive middle rock staging area. One of our largest structural builds.
+      </div>
+      <div class="gallery-grid">
+        <div class="gallery-item wide">
+          <img src="./img/coastal-barn-1.jpg" alt="Barn by the ocean exterior" loading="lazy" onerror="this.style.background='#111'">
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+    
+    <!-- COMMUNITY BUILDS -->
+    <section aria-labelledby="community-heading">
+      <h2 id="community-heading">Project 04 // Community</h2>
+      <h3>Backyard Transformations & Retaining Walls</h3>
+      <div class="project-desc">
+        Complete patio overhauls, paver installations, lattice and fence work, and heavy-duty retaining walls designed specifically for elderly neighbors needing accessible, usable, and safe outdoor space. 
+      </div>
+      <div class="gallery-grid">
+        <div class="gallery-item">
+          <img src="./img/community-build-1.jpg" alt="Neighbor's bench and retaining wall" loading="lazy" onerror="this.style.background='#111'">
+        </div>
+        <div class="gallery-item">
+          <img src="./img/community-build-2.jpg" alt="Backyard transformation and pavers" loading="lazy" onerror="this.style.background='#111'">
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ABOUT THE BUILDER -->
+    <section aria-labelledby="about-heading">
+      <h2 id="about-heading">The Builder</h2>
+      <div class="about-text">
+        <p>
+          I'm Irie Flanagan. I grew up working, went on my own at 16, graduated early, and have been fixing things for people and building out of salvage ever since.
+        </p>
+        <br>
+        <p>
+          I've lived in Sonoma County most of my life. Most of my day-to-day clients are elderly or visually impaired neighbors who need a <strong>reliable person who shows up and gets it done</strong>. That's the work that anchors me.
+        </p>
+        <br>
+        <p>
+          The company behind all of this is <strong>FOS Master LLC</strong>, a California LLC that also builds accessible software tools. We bridge tech and the trades with the same hands. 
+        </p>
+      </div>
+
+      <div class="mandate" role="note" aria-label="Charitable giving commitment">
+        <p>
+          <strong>10% of every dollar I earn goes directly to pediatric cancer research.</strong><br>
+          Off the top. Always. Not net — gross. This is a permanent mandate, not a marketing campaign.
+        </p>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- CONTACT -->
+    <section aria-labelledby="contact-heading">
+      <h2 id="contact-heading">Deploy FOS Master</h2>
+      <div class="contact-block">
+        <p>
+          Available for custom kinetic/UV installations, heavy-duty garden and outdoor builds, and reliable handyman work. I work alone, I show up on time, and I build things to last. 
+        </p>
+        <div class="contact-details">
+          <div class="contact-detail">
+            <span class="label">Phone</span>
+            <a href="tel:+17075962264" aria-label="Call Flanagan">(707) 596-2264</a>
+          </div>
+          <div class="contact-detail">
+            <span class="label">Email</span>
+            <a href="mailto:trimtilltheend@gmail.com">trimtilltheend@gmail.com</a>
+          </div>
+          <div class="contact-detail">
+            <span class="label">Area</span>
+            <span>Sonoma County, CA</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div>
+      <p>© 2026 FOS Master LLC — Flanagan</p>
+      <p>Petaluma, California</p>
+    </div>
+    <p class="gold-note">10% gross → pediatric cancer research. Always.</p>
+  </footer>
+
+  <div class="glow-bar"></div>
+
+</body>
+</html>
