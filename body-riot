@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#050507" />
+<title>BODY RIOT — a one-person party for every inch of you</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bungee&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --black:#050507;
+    --black-2:#0c0c12;
+    --aqua:#00FFFF;
+    --magenta:#FF2D95;
+    --violet:#B14BFF;
+    --lime:#C6FF00;
+    --gold:#FFD700;
+    --ink:#F2F4F8;
+    --muted:#9aa3b2;
+    --tap:64px;
+    --display:'Bungee','Arial Black','Helvetica Neue',sans-serif;
+    --body:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--black);color:var(--ink);font-family:var(--body)}
+  body{min-height:100vh;min-height:100dvh;overflow-x:hidden;-webkit-tap-highlight-color:transparent}
+
+  a{color:var(--aqua)}
+  .skip{position:absolute;left:-999px;top:0;background:var(--aqua);color:#000;padding:12px 16px;border-radius:0 0 12px 0;z-index:9999;font-weight:700}
+  .skip:focus{left:0}
+
+  :focus-visible{outline:3px solid var(--aqua);outline-offset:3px;border-radius:8px}
+
+  .wrap{max-width:760px;margin:0 auto;padding:18px 18px 120px;position:relative;z-index:2}
+  header.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-top:8px}
+  .brand{font-family:var(--display);font-size:clamp(28px,8vw,46px);line-height:.9;letter-spacing:1px;
+    background:linear-gradient(90deg,var(--aqua),var(--magenta),var(--violet));
+    -webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 14px rgba(0,255,255,.35))}
+  .tagline{color:var(--muted);font-size:13px;margin-top:6px}
+  .gear{min-width:var(--tap);min-height:var(--tap);border-radius:50%;border:2px solid #20242e;background:#0e0f15;color:var(--ink);font-size:24px;cursor:pointer}
+  .gear:active{transform:scale(.94)}
+
+  .stage{margin:26px 0 10px;display:flex;flex-direction:column;align-items:center;text-align:center}
+  .cannon{
+    position:relative;width:min(74vw,320px);height:min(74vw,320px);border-radius:50%;cursor:pointer;border:0;
+    color:#04141a;font-family:var(--display);font-size:clamp(26px,9vw,42px);letter-spacing:1px;
+    background:radial-gradient(circle at 50% 38%,#bafcff,var(--aqua) 42%,#00b3c4 70%,#007a86);
+    box-shadow:0 0 0 6px rgba(0,255,255,.18),0 0 60px rgba(0,255,255,.45),inset 0 -14px 30px rgba(0,0,0,.35);
+    display:flex;align-items:center;justify-content:center;text-align:center;line-height:1;padding:18px;
+    transition:transform .08s ease, box-shadow .25s ease}
+  .cannon:active{transform:scale(.95)}
+  .cannon .sub{display:block;font-family:var(--body);font-weight:700;font-size:13px;letter-spacing:2px;margin-top:8px;color:#063}
+  .cannon.pulse{animation:cannonPulse 2.4s ease-in-out infinite}
+  @keyframes cannonPulse{0%,100%{box-shadow:0 0 0 6px rgba(0,255,255,.18),0 0 50px rgba(0,255,255,.4),inset 0 -14px 30px rgba(0,0,0,.35)}
+    50%{box-shadow:0 0 0 10px rgba(255,45,149,.18),0 0 90px rgba(0,255,255,.7),inset 0 -14px 30px rgba(0,0,0,.35)}}
+
+  .caption{min-height:74px;margin:20px auto 4px;max-width:640px;text-align:center;font-family:var(--display);
+    font-size:clamp(20px,6.2vw,34px);line-height:1.08;text-wrap:balance;
+    text-shadow:0 0 18px rgba(0,255,255,.35)}
+  .caption.flash{animation:capPop .4s ease}
+  @keyframes capPop{0%{transform:scale(.86);opacity:.2}100%{transform:scale(1);opacity:1}}
+
+  h2.section{font-family:var(--display);font-size:14px;letter-spacing:3px;color:var(--muted);margin:34px 4px 12px;text-transform:uppercase}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  .tile{min-height:120px;border:2px solid #1a1d26;border-radius:18px;background:linear-gradient(160deg,#0e0f16,#08080c);
+    color:var(--ink);text-align:left;padding:16px;cursor:pointer;display:flex;flex-direction:column;justify-content:space-between;
+    transition:transform .1s ease,border-color .2s ease,box-shadow .2s ease}
+  .tile:active{transform:translateY(2px) scale(.99)}
+  .tile:hover{border-color:var(--aqua);box-shadow:0 0 26px rgba(0,255,255,.12)}
+  .tile .emoji{font-size:30px}
+  .tile .t-name{font-family:var(--display);font-size:16px;letter-spacing:.5px;margin-top:8px}
+  .tile .t-desc{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.3}
+
+  .scene{display:none;position:fixed;inset:0;z-index:50;background:var(--black);overflow-y:auto}
+  .scene.open{display:block;animation:fade .2s ease}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  .scene-inner{max-width:680px;margin:0 auto;padding:18px 18px 130px;min-height:100%}
+  .scene-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;position:sticky;top:0;background:linear-gradient(var(--black),rgba(5,5,7,.85));padding:8px 0 14px;backdrop-filter:blur(4px)}
+  .back{min-height:var(--tap);padding:0 18px;border-radius:999px;border:2px solid #20242e;background:#0e0f15;color:var(--ink);font-weight:700;cursor:pointer;font-size:15px}
+  .scene-title{font-family:var(--display);font-size:clamp(20px,6vw,30px);letter-spacing:1px}
+  .scene p.lead{color:var(--muted);font-size:15px;line-height:1.5}
+
+  .big-btn{width:100%;min-height:96px;border:0;border-radius:20px;cursor:pointer;color:#04141a;
+    font-family:var(--display);font-size:clamp(20px,6vw,30px);letter-spacing:1px;margin-top:18px;
+    background:linear-gradient(120deg,var(--aqua),#28e0ff);box-shadow:0 0 40px rgba(0,255,255,.35);transition:transform .08s}
+  .big-btn:active{transform:scale(.97)}
+  .big-btn.pink{background:linear-gradient(120deg,var(--magenta),#ff63ae);box-shadow:0 0 40px rgba(255,45,149,.35);color:#1a0410}
+  .big-btn.lime{background:linear-gradient(120deg,var(--lime),#e4ff6b);box-shadow:0 0 40px rgba(198,255,0,.3);color:#11140a}
+  .big-btn.violet{background:linear-gradient(120deg,var(--violet),#cf85ff);box-shadow:0 0 40px rgba(177,75,255,.35);color:#0c0312}
+
+  .reels{display:grid;grid-template-columns:1fr;gap:10px;margin-top:8px}
+  .reel{border:2px solid #20242e;border-radius:14px;background:#08080c;min-height:62px;display:flex;align-items:center;justify-content:center;
+    font-family:var(--display);font-size:clamp(16px,5vw,24px);text-align:center;padding:10px;color:var(--aqua)}
+  .reel.spin{color:var(--violet);filter:blur(.4px);opacity:.85}
+
+  .counter{font-family:var(--display);font-size:clamp(54px,20vw,120px);text-align:center;color:var(--lime);line-height:1;margin:18px 0;text-shadow:0 0 30px rgba(198,255,0,.4)}
+
+  #mirrorStage{position:relative;width:100%;aspect-ratio:3/4;max-height:62vh;margin:10px auto 0;border-radius:20px;overflow:hidden;background:#000;border:2px solid #20242e}
+  #mirrorVideo{width:100%;height:100%;object-fit:cover;transform:scaleX(-1);filter:saturate(1.25) contrast(1.05)}
+  #mirrorStage .glow{position:absolute;inset:0;box-shadow:inset 0 0 90px rgba(0,255,255,.45),inset 0 0 40px rgba(255,45,149,.3);pointer-events:none}
+  #mirrorStage .crown{position:absolute;top:6%;left:50%;transform:translateX(-50%);font-size:54px;pointer-events:none;filter:drop-shadow(0 0 12px rgba(255,215,0,.8))}
+  #mirrorStage .mhype{position:absolute;left:0;right:0;bottom:12px;text-align:center;font-family:var(--display);font-size:clamp(16px,5vw,24px);
+    color:#fff;text-shadow:0 0 14px var(--magenta),0 2px 6px #000;padding:0 12px}
+
+  .field{width:100%;min-height:54px;border-radius:14px;border:2px solid #20242e;background:#08080c;color:var(--ink);
+    font-size:16px;padding:14px;margin-top:12px;font-family:var(--body)}
+  .field:focus{border-color:var(--aqua);outline:none}
+  .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+  .row .big-btn{flex:1;min-width:140px;margin-top:0}
+  .result-box{margin-top:18px;border-left:4px solid var(--aqua);background:#0a0b11;border-radius:0 14px 14px 0;padding:16px;font-size:17px;line-height:1.5;min-height:10px}
+
+  #raveStage{position:relative;height:54vh;border-radius:20px;overflow:hidden;margin-top:10px;background:#070709;border:2px solid #20242e;
+    display:flex;align-items:center;justify-content:center;text-align:center}
+  #raveStage .drop{font-family:var(--display);font-size:clamp(26px,9vw,52px);letter-spacing:1px;padding:0 16px;
+    color:#fff;text-shadow:0 0 24px var(--aqua),0 0 40px var(--magenta);z-index:2}
+  #raveGlow{position:absolute;inset:0;z-index:1;opacity:.0;transition:opacity .12s linear;
+    background:radial-gradient(circle at 50% 50%,rgba(0,255,255,.5),rgba(177,75,255,.25) 50%,transparent 72%)}
+
+  .warnbox{border:2px solid var(--gold);background:rgba(255,215,0,.07);border-radius:14px;padding:14px;margin-top:14px;font-size:14px;line-height:1.5}
+
+  .sheet{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.6);display:none;align-items:flex-end;justify-content:center}
+  .sheet.open{display:flex;animation:fade .2s}
+  .sheet-card{background:var(--black-2);border:2px solid #1a1d26;border-radius:22px 22px 0 0;width:100%;max-width:520px;padding:20px 20px 30px}
+  .sheet h3{font-family:var(--display);font-size:18px;margin:0 0 14px;letter-spacing:1px}
+  .toggle{display:flex;align-items:center;justify-content:space-between;padding:14px 4px;border-bottom:1px solid #15171f}
+  .toggle:last-child{border-bottom:0}
+  .toggle span{font-size:15px}
+  .sw{min-width:64px;min-height:36px;border-radius:999px;border:2px solid #2a2e3a;background:#15171f;position:relative;cursor:pointer}
+  .sw[aria-checked="true"]{background:var(--aqua);border-color:var(--aqua)}
+  .sw::after{content:"";position:absolute;top:3px;left:3px;width:26px;height:26px;border-radius:50%;background:#fff;transition:left .15s}
+  .sw[aria-checked="true"]::after{left:31px}
+
+  footer.mandate{position:fixed;left:0;right:0;bottom:0;z-index:40;background:linear-gradient(transparent,var(--black) 40%);padding:10px 16px 14px;text-align:center}
+  footer.mandate .ten{color:var(--gold);font-weight:700;font-size:12.5px;letter-spacing:.3px}
+  footer.mandate .co{color:var(--muted);font-size:11px;margin-top:2px}
+
+  #confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
+
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+  @media (prefers-reduced-motion: reduce){
+    .cannon.pulse{animation:none}
+    .caption.flash{animation:none}
+  }
+  .reduce .cannon.pulse{animation:none}
+  .reduce .caption.flash{animation:none}
+</style>
+</head>
+<body>
+<a class="skip" href="#cannonBtn">Skip to the Hype Cannon</a>
+
+<canvas id="confetti" aria-hidden="true"></canvas>
+
+<div id="live" class="sr-only" role="status" aria-live="assertive" aria-atomic="true"></div>
+
+<div class="wrap" id="hub">
+  <header class="top">
+    <div>
+      <div class="brand">BODY RIOT</div>
+      <div class="tagline">a one-person party for every inch of you</div>
+    </div>
+    <button class="gear" id="openSettings" aria-label="Settings: motion, sound, haptics, voice">⚙️</button>
+  </header>
+
+  <section class="stage" aria-labelledby="cannonHead">
+    <h1 id="cannonHead" class="sr-only">Hype Cannon</h1>
+    <button class="cannon pulse" id="cannonBtn" aria-describedby="cannonHint">
+      FIRE
+      <span class="sub">TAP TO BLAST</span>
+    </button>
+    <p id="cannonHint" class="sr-only">Activates a body-positive hype blast you can hear and read.</p>
+    <div class="caption" id="caption" aria-hidden="true">Tap FIRE. Let's celebrate you.</div>
+  </section>
+
+  <h2 class="section">Pick your party</h2>
+  <div class="grid" id="modeGrid">
+    <button class="tile" data-mode="slot"><span class="emoji" aria-hidden="true">🎰</span><span class="t-name">Compliment Slot Machine</span><span class="t-desc">Shake or pull the lever. Hit the hype jackpot.</span></button>
+    <button class="tile" data-mode="strut"><span class="emoji" aria-hidden="true">🚶‍♀️‍➡️</span><span class="t-name">Strut Mode</span><span class="t-desc">An announcer walks YOU out like a superstar.</span></button>
+    <button class="tile" data-mode="rave"><span class="emoji" aria-hidden="true">🪩</span><span class="t-name">Affirmation Rave</span><span class="t-desc">One-person disco. Affirmations on the beat.</span></button>
+    <button class="tile" data-mode="booth"><span class="emoji" aria-hidden="true">🎤</span><span class="t-name">Shameless Booth</span><span class="t-desc">Name an insecurity. Get it reframed and roasted with love.</span></button>
+    <button class="tile" data-mode="booty"><span class="emoji" aria-hidden="true">🍑</span><span class="t-name">Booty Metronome</span><span class="t-desc">Wiggle. It counts every shake and cheers.</span></button>
+    <button class="tile" data-mode="mirror"><span class="emoji" aria-hidden="true">✨</span><span class="t-name">Glow-Up Hype Mirror</span><span class="t-desc">Neon glow + a crown. Nothing recorded, ever.</span></button>
+  </div>
+
+  <h2 class="section">Hands-free</h2>
+  <div class="grid">
+    <button class="tile" id="voiceNav" style="grid-column:1/-1"><span class="emoji" aria-hidden="true">🗣️</span><span class="t-name">Say a mode out loud</span><span class="t-desc">Tap, then say "fire", "slot", "strut", "rave", "booth", "booty", or "mirror".</span></button>
+  </div>
+</div>
+
+<section class="scene" id="scene-slot" aria-labelledby="slotTitle" role="dialog" aria-modal="true">
+  <div class="scene-inner">
+    <div class="scene-bar"><button class="back" data-back>← Back</button><span class="scene-title" id="slotTitle">Slot Machine</span></div>
+    <p class="lead">Shake your phone, or pull the lever. Three reels, one glorious verdict.</p>
+    <div class="reels">
+      <div class="reel" id="reel0" aria-hidden="true">your…</div>
+      <div class="reel" id="reel1" aria-hidden="true">are…</div>
+      <div class="reel" id="reel2" aria-hidden="true">…</div>
+    </div>
+    <button class="big-btn pink" id="slotPull">PULL THE LEVER</button>
+  </div>
+</section>
+
+<section class="scene" id="scene-strut" aria-labelledby="strutTitle" role="dialog" aria-modal="true">
+  <div class="scene-inner">
+    <div class="scene-bar"><button class="back" data-back>← Back</button><span class="scene-title" id="strutTitle">Strut Mode</span></div>
+    <p class="lead">Hit it. House lights down. The announcer has been waiting all night for you.</p>
+    <button class="big-btn violet" id="strutGo">WALK ME OUT</button>
+  </div>
+</section>
+
+<section class="scene" id="scene-rave" aria-labelledby="raveTitle" role="dialog" aria-modal="true">
+  <div class="scene-inner">
+    <div class="scene-bar"><button class="back" data-back>← Back</button><span class="scene-title" id="raveTitle">Affirmation Rave</span></div>
+    <div class="warnbox" id="raveWarn">⚠️ This mode pulses light gently in time with a beat. Flashing is kept slow and smooth. If you're photosensitive, leave <strong>Calm pulse</strong> on (it's on by default), or turn on Reduce motion in settings for spoken affirmations with no flashing.</div>
+    <div id="raveStage"><div id="raveGlow" aria-hidden="true"></div><div class="drop" id="raveDrop">Ready when you are.</div></div>
+    <div class="row">
+      <button class="big-btn" id="raveStart">START THE RAVE</button>
+    </div>
+    <div class="toggle" style="margin-top:8px"><span>Calm pulse (slower, gentler light)</span><button class="sw" id="raveCalm" role="switch" aria-checked="true" aria-label="Calm pulse"></button></div>
+  </div>
+</section>
+
+<section class="scene" id="scene-booth" aria-labelledby="boothTitle" role="dialog" aria-modal="true">
+  <div class="scene-inner">
+    <div class="scene-bar"><button class="back" data-back>← Back</button><span class="scene-title" id="boothTitle">Shameless Booth</span></div>
