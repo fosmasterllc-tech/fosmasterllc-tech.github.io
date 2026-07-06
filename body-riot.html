@@ -226,3 +226,314 @@
 <section class="scene" id="scene-booth" aria-labelledby="boothTitle" role="dialog" aria-modal="true">
   <div class="scene-inner">
     <div class="scene-bar"><button class="back" data-back>← Back</button><span class="scene-title" id="boothTitle">Shameless Booth</span></div>
+   <p class="lead">Tell me one thing you've been hard on yourself about. Type it, or tap the mic and say it. It doesn't leave this device.</p>
+    <label for="boothInput" class="sr-only">What are you feeling insecure about?</label>
+    <input class="field" id="boothInput" type="text" placeholder="e.g. my belly, my laugh, my whole self…" autocomplete="off" />
+    <div class="row">
+      <button class="big-btn pink" id="boothSubmit">ABSORB IT</button>
+      <button class="big-btn violet" id="boothMic" aria-label="Say it out loud">🎤 SPEAK</button>
+    </div>
+    <div class="result-box" id="boothResult" aria-live="polite">Whatever it is — it's smaller than the story you've built around it. Let's see.</div>
+  </div>
+</section>
+<section class="scene" id="scene-booty" aria-labelledby="bootyTitle" role="dialog" aria-modal="true">
+  <div class="scene-inner">
+    <div class="scene-bar"><button class="back" data-back>← Back</button><span class="scene-title" id="bootyTitle">Booty Metronome</span></div>
+    <p class="lead">Start it, then move. It feels your wiggles through the phone and counts every one. No motion sensor? The big button works too.</p>
+    <div class="counter" id="bootyCount" aria-hidden="true">0</div>
+    <div class="row">
+      <button class="big-btn lime" id="bootyStart">START COUNTING</button>
+      <button class="big-btn" id="bootyTap" aria-label="Manual wiggle">WIGGLE 🍑</button>
+    </div>
+    <p class="lead" id="bootyStatus" style="margin-top:14px">Tip: hold the phone and shake your hips, shoulders, whatever moves. Every count is a celebration.</p>
+  </div>
+</section>
+<section class="scene" id="scene-mirror" aria-labelledby="mirrorTitle" role="dialog" aria-modal="true">
+  <div class="scene-inner">
+    <div class="scene-bar"><button class="back" data-back>← Back</button><span class="scene-title" id="mirrorTitle">Glow-Up Hype Mirror</span></div>
+    <div class="warnbox">🔒 Nothing is recorded, saved, analyzed, or sent anywhere. The camera runs only on your screen and stops the moment you leave. Don't want the camera? Tap <strong>Audio only</strong> for sparkles and hype with no camera.</div>
+    <div id="mirrorStage">
+      <video id="mirrorVideo" playsinline muted autoplay aria-hidden="true"></video>
+      <div class="glow" aria-hidden="true"></div>
+      <div class="crown" aria-hidden="true">👑</div>
+      <div class="mhype" id="mirrorHype">Tap below to glow.</div>
+    </div>
+    <div class="row">
+      <button class="big-btn" id="mirrorStart">TURN ON THE GLOW</button>
+      <button class="big-btn violet" id="mirrorAudio" aria-label="Audio only, no camera">AUDIO ONLY</button>
+    </div>
+  </div>
+</section>
+<div class="sheet" id="settingsSheet" role="dialog" aria-modal="true" aria-labelledby="setHead">
+  <div class="sheet-card">
+    <h3 id="setHead">Settings</h3>
+    <div class="toggle"><span>Speak out loud (voice)</span><button class="sw" data-set="voice" role="switch" aria-checked="true" aria-label="Speak out loud"></button></div>
+    <div class="toggle"><span>Sound effects</span><button class="sw" data-set="sound" role="switch" aria-checked="true" aria-label="Sound effects"></button></div>
+    <div class="toggle"><span>Haptics (vibration)</span><button class="sw" data-set="haptics" role="switch" aria-checked="true" aria-label="Haptics"></button></div>
+    <div class="toggle"><span>Reduce motion (no confetti / flashing)</span><button class="sw" data-set="reduce" role="switch" aria-checked="false" aria-label="Reduce motion"></button></div>
+    <button class="big-btn" id="closeSettings" style="margin-top:18px">DONE</button>
+  </div>
+</div>
+<footer class="mandate">
+  <div class="ten">FOS Master LLC — 10% of NET revenue funds pediatric cancer research</div>
+  <div class="co">Built eyes-free · WCAG-first · every body welcome</div>
+</footer>
+<script>
+"use strict";
+(function(){
+  var mem = {};
+  var store = {
+    get:function(k){ try{ var v=localStorage.getItem(k); return v===null?(k in mem?mem[k]:null):v; }catch(e){ return (k in mem)?mem[k]:null; } },
+    set:function(k,v){ try{ localStorage.setItem(k,v); }catch(e){ mem[k]=v; } }
+  };
+  var settings = {
+    voice:   store.get('br_voice')   !== 'off',
+    sound:   store.get('br_sound')   !== 'off',
+    haptics: store.get('br_haptics') !== 'off',
+    reduce:  store.get('br_reduce')  === 'on' || window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  };
+  function applyReduce(){ document.body.classList.toggle('reduce', settings.reduce); }
+  applyReduce();
+  var actx=null;
+  function audio(){ if(!settings.sound) return null; try{ if(!actx) actx=new (window.AudioContext||window.webkitAudioContext)(); if(actx.state==='suspended') actx.resume(); return actx; }catch(e){ return null; } }
+  function tone(freq,dur,type,gain,when){
+    var a=audio(); if(!a) return; when=when||0; var t=a.currentTime+when;
+    var o=a.createOscillator(), g=a.createGain();
+    o.type=type||'sine'; o.frequency.setValueAtTime(freq,t);
+    g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(gain||0.18,t+0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    o.connect(g); g.connect(a.destination); o.start(t); o.stop(t+dur+0.02);
+  }
+  function noise(dur,gain,filterFreq,when){
+    var a=audio(); if(!a) return; when=when||0;
+    var n=Math.floor(a.sampleRate*dur), buf=a.createBuffer(1,n,a.sampleRate), d=buf.getChannelData(0);
+    for(var i=0;i<n;i++) d[i]=(Math.random()*2-1)*(1-i/n);
+    var s=a.createBufferSource(); s.buffer=buf;
+    var f=a.createBiquadFilter(); f.type='lowpass'; f.frequency.value=filterFreq||1200;
+    var g=a.createGain(); g.gain.value=gain||0.18;
+    s.connect(f); f.connect(g); g.connect(a.destination); s.start(a.currentTime+when);
+  }
+  var SFX={
+    blast:function(){ noise(0.35,0.25,2600); tone(420,0.3,'sawtooth',0.2); tone(180,0.4,'sine',0.18,0.02); },
+    jackpot:function(){ [523,659,784,1047,1319].forEach(function(f,i){ tone(f,0.18,'square',0.14,i*0.09); }); },
+    cheer:function(){ noise(1.0,0.22,1800); tone(660,0.6,'sine',0.06); tone(880,0.6,'sine',0.05,0.05); },
+    siren:function(){ tone(660,0.5,'sine',0.16); tone(990,0.5,'sine',0.16,0.5); },
+    sparkle:function(){ for(var i=0;i<6;i++) tone(1400+Math.random()*1600,0.12,'sine',0.07,i*0.05); },
+    whoosh:function(){ noise(0.5,0.2,900); },
+    drum:function(when){ var a=audio(); if(!a) return; var t=a.currentTime+(when||0); var o=a.createOscillator(),g=a.createGain(); o.type='sine'; o.frequency.setValueAtTime(150,t); o.frequency.exponentialRampToValueAtTime(48,t+0.14); g.gain.setValueAtTime(0.3,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.16); o.connect(g); g.connect(a.destination); o.start(t); o.stop(t+0.2); }
+  };
+  var synth = window.speechSynthesis || null;
+  function speak(text,opts){
+    if(!settings.voice || !synth) return;
+    try{
+      synth.cancel();
+      var u=new SpeechSynthesisUtterance(text);
+      opts=opts||{}; u.rate=opts.rate||1; u.pitch=opts.pitch||1; u.volume=1; u.lang='en-US';
+      synth.speak(u);
+    }catch(e){}
+  }
+  function buzz(p){ if(!settings.haptics) return; try{ if(navigator.vibrate) navigator.vibrate(p); }catch(e){} }
+  var live=document.getElementById('live');
+  function announce(text){ live.textContent=''; setTimeout(function(){ live.textContent=text; },30); }
+  var cvs=document.getElementById('confetti'), ctx=cvs.getContext('2d'), parts=[], raf=null;
+  function size(){ cvs.width=innerWidth*devicePixelRatio; cvs.height=innerHeight*devicePixelRatio; ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0); }
+  size(); addEventListener('resize',size);
+  var COLORS=['#00FFFF','#FF2D95','#B14BFF','#C6FF00','#FFD700','#ffffff'];
+  function confetti(n){
+    if(settings.reduce) return;
+    n=n||90;
+    for(var i=0;i<n;i++) parts.push({x:innerWidth/2,y:innerHeight*0.42,vx:(Math.random()-0.5)*16,vy:Math.random()*-15-4,g:0.4+Math.random()*0.3,s:6+Math.random()*8,c:COLORS[(Math.random()*COLORS.length)|0],r:Math.random()*6,vr:(Math.random()-0.5)*0.4,life:90+Math.random()*40});
+    if(!raf) raf=requestAnimationFrame(tick);
+  }
+  function tick(){
+    ctx.clearRect(0,0,innerWidth,innerHeight);
+    for(var i=parts.length-1;i>=0;i--){ var p=parts[i]; p.vy+=p.g; p.x+=p.vx; p.y+=p.vy; p.r+=p.vr; p.life--;
+      ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.r); ctx.fillStyle=p.c; ctx.globalAlpha=Math.max(0,Math.min(1,p.life/40)); ctx.fillRect(-p.s/2,-p.s/2,p.s,p.s*0.6); ctx.restore();
+      if(p.life<=0||p.y>innerHeight+40) parts.splice(i,1);
+    }
+    if(parts.length) raf=requestAnimationFrame(tick); else { raf=null; ctx.clearRect(0,0,innerWidth,innerHeight); }
+  }
+  var HYPE=["Yeah, you're exactly the person someone's been waiting for.","That body? Absolutely worth the time. Worth the attention.","Disabled people have incredible sex. You're proof.","The confidence on you right now is lethal.","You're not broken. You're fascinating.","Hot, smart, and completely unapologetic. That's the energy.","Your scars and your swagger? The combination is devastating.","Someone's going to be very, very lucky to know what you look like naked.","You take up exactly the right amount of space.","That body's a masterpiece. Own it like you already do.","Soft, strong, and absolutely fuckable.","The kind of person who makes it hard to look away.","Your curves, your rolls, your whole thing — it's magnetic.","Naked confidence. That's the move.","You're the fantasy. Not the apology.","Built for pleasure. Built for being worshipped.","Yeah, disabled bodies are hot. This one especially.","The kind of person who knows they're a catch and acts like it.","Sexy, complicated, and completely worth the effort.","You're not what they told you to be. You're better.","That body deserves hands on it that appreciate the whole thing.","The kind of hot that comes from actually knowing yourself.","Unapologetic. Unforgettable. Undeniably fuckable.","You're the person they write about. The one they can't get out of their head."];
+  var PARTS=["thighs","belly","smile","shoulders","hips","arms","whole self","back","hands","laugh","glow","curves","jawline","everything"];
+  var ADJ=["majestic","scandalously gorgeous","unfairly hot","soft and devastating","downright royal","pure magic","ridiculously lovable","heroic","velvet-smooth","cosmic","outrageously fine","sun-warmed","certified iconic"];
+  var NOUNS=["royalty","a national treasure","pure art","a whole vibe","a living legend","a perfect ten","a masterpiece","front-page news","a miracle","a gift to the room","main-stage material","a marvel"];
+  var STRUT=["Ladies and gentlemen, the moment you've been waiting for — the absolute sexiest person in this room is about to walk out. That's you.","Stop everything. The one who's been on your mind just stepped into the room.","Jaws down. Breath caught. That's the effect you have. Own it.","Every eye on you. Every thought on you. That's power.","The headliner is here. The one they all came to see. Walk.","You are the fantasy. Walk like you know it."];
+  var RAVE=["You're absolutely fuckable.","That body's a weapon.","Unapologetic.","Hot, weird, yours.","Shameless.","The one they want.","Built for it.","Relentless.","Magnetic.","Take what's yours.","You're the fantasy.","Unstoppable."];
+  var BOOTH=["That thing you're worried about? Someone out there is absolutely obsessed with exactly that.","You've been running from the wrong people. The right ones would worship it.","That insecurity you're carrying? It's actually your hottest feature to the people who matter.","Stop apologizing for your body to people who don't deserve to see it.","What you call a flaw, someone's calling their favorite thing about you.","Your body isn't something to hide. It's something to be wanted.","The people worth your time are the ones who can't look away from exactly what you're worried about.","You're allowed to be desired exactly like this. Right now. No edit required."];
+  var BOOTH_ECHO=['The '+' + WORD + '+' + '? That\\'s exactly what makes you unforgettable.','You said "'+' + WORD + '+' + '". I heard "hot as hell." Both are true.','Your "'+' + WORD + '+' + '" is what someone\\'s going to worship about you.'];
+  var BOOTY=["There it is!","Keep it moving!","Work it!","Every move counts!","Look at you GO!","That's the rhythm!","Hips don't lie!","More! More!","Absolutely unstoppable!","Own the floor!"];
+  var MIRROR=["The camera can't handle how hot you are.","Glow detected. Source: pure sex appeal.","That crown looks good on you.","That's the face of someone worth worshipping.","Absolutely devastating.","Give the camera a smirk, you legend.","Nobody else in the room stands a chance.","Ten out of ten. Actual fact.","You make desire look easy.","Hot. Absolutely undeniably hot."];
+  function pick(a){ return a[(Math.random()*a.length)|0]; }
+  var caption=document.getElementById('caption');
+  function showCaption(text){ caption.textContent=text; caption.classList.remove('flash'); void caption.offsetWidth; if(!settings.reduce) caption.classList.add('flash'); }
+  function fireHype(text){ text=text||pick(HYPE); showCaption(text); announce(text); speak(text,{pitch:1.05}); SFX.blast(); buzz([40,30,80]); confetti(110); }
+  var cannonBtn=document.getElementById('cannonBtn');
+  cannonBtn.addEventListener('click',function(){ audio(); fireHype(); });
+  var openScene=null, lastFocus=null;
+  function show(mode){
+    var el=document.getElementById('scene-'+mode); if(!el) return;
+    lastFocus=document.activeElement; el.classList.add('open'); openScene=mode;
+    var t=el.querySelector('.scene-title'); if(t){ t.setAttribute('tabindex','-1'); t.focus(); }
+    announce(t?('Opened '+t.textContent):('Opened '+mode));
+    if(mode==='mirror'){} 
+  }
+  function hideScene(){
+    if(!openScene) return;
+    var el=document.getElementById('scene-'+openScene);
+    if(openScene==='mirror') stopMirror();
+    if(openScene==='rave') stopRave();
+    if(openScene==='booty') stopBooty();
+    el.classList.remove('open'); openScene=null;
+    if(lastFocus&&lastFocus.focus) lastFocus.focus();
+  }
+  document.getElementById('modeGrid').addEventListener('click',function(e){
+    var b=e.target.closest('[data-mode]'); if(!b) return; audio(); show(b.getAttribute('data-mode'));
+  });
+  document.querySelectorAll('[data-back]').forEach(function(b){ b.addEventListener('click',hideScene); });
+  addEventListener('keydown',function(e){ if(e.key==='Escape'){ if(document.getElementById('settingsSheet').classList.contains('open')) closeSet(); else hideScene(); } });
+  var reels=[document.getElementById('reel0'),document.getElementById('reel1'),document.getElementById('reel2')];
+  var slotBusy=false;
+  function slotPull(){
+    if(slotBusy) return; slotBusy=true; audio(); SFX.whoosh(); buzz(20);
+    var finals=[pick(PARTS),pick(ADJ),pick(NOUNS)];
+    reels.forEach(function(r){ r.classList.add('spin'); });
+    var ticks=0, iv=setInterval(function(){
+      reels[0].textContent='your '+pick(PARTS); reels[1].textContent=pick(ADJ); reels[2].textContent=pick(NOUNS);
+      SFX.drum(0); ticks++;
+      if(ticks>14){ clearInterval(iv);
+        reels[0].textContent='your '+finals[0]; reels[1].textContent=finals[1]; reels[2].textContent=finals[2];
+        reels.forEach(function(r){ r.classList.remove('spin'); });
+        var line='Your '+finals[0]+': '+finals[1]+' '+finals[2]+'.';
+        showLine(line,'jackpot'); slotBusy=false;
+      }
+    },90);
+  }
+  function showLine(line,kind){ announce(line); speak(line,{pitch:1.05}); if(kind==='jackpot'){ SFX.jackpot(); confetti(120); buzz([30,40,30,40,90]); } }
+  document.getElementById('slotPull').addEventListener('click',slotPull);
+  var strutBusy=false;
+  document.getElementById('strutGo').addEventListener('click',function(){
+    if(strutBusy) return; strutBusy=true; audio();
+    var line=pick(STRUT);
+    SFX.drum(0); SFX.drum(0.25); SFX.drum(0.5);
+    setTimeout(function(){ SFX.cheer(); confetti(140); buzz([60,40,60,40,120]); announce(line); speak(line,{rate:0.96,pitch:0.95}); },650);
+    setTimeout(function(){ strutBusy=false; },2600);
+  });
+  var raveTimer=null, raveBeat=null, raveCalm=true;
+  var glow=document.getElementById('raveGlow'), drop=document.getElementById('raveDrop');
+  document.getElementById('raveCalm').addEventListener('click',function(){ raveCalm=this.getAttribute('aria-checked')!=='true'; this.setAttribute('aria-checked',raveCalm?'true':'false'); });
+  function pulseGlow(){
+    if(settings.reduce) return;
+    glow.style.opacity='0.85';
+    setTimeout(function(){ glow.style.opacity='0'; }, raveCalm?420:200);
+  }
+  function stopRave(){ if(raveTimer){clearInterval(raveTimer);raveTimer=null;} if(raveBeat){clearInterval(raveBeat);raveBeat=null;} glow.style.opacity='0'; var b=document.getElementById('raveStart'); if(b) b.textContent='START THE RAVE'; }
+  document.getElementById('raveStart').addEventListener('click',function(){
+    audio();
+    if(raveTimer){ stopRave(); drop.textContent='Paused. Tap to bring it back.'; return; }
+    this.textContent='STOP'; drop.textContent='Here we GO.';
+    var bpm=raveCalm?90:120, ms=60000/bpm;
+    raveBeat=setInterval(function(){ SFX.drum(0); pulseGlow(); },ms);
+    raveTimer=setInterval(function(){ var d=pick(RAVE); drop.textContent=d; announce(d); speak(d,{pitch:1.1,rate:1.02}); buzz(30); },ms*2);
+  });
+  function reframe(word){
+    var base=pick(BOOTH); var out=base;
+    word=(word||'').trim();
+    if(word && word.length<=40){ var echo=pick(BOOTH_ECHO).replace(/WORD/g,word.replace(/[<>]/g,'')); out=base+' '+echo; }
+    return out;
+  }
+  function runBooth(word){
+    audio(); SFX.whoosh(); buzz([20,30,60]);
+    var box=document.getElementById('boothResult'); box.textContent='…';
+    setTimeout(function(){ var msg=reframe(word); box.textContent=msg; speak(msg,{rate:0.98}); SFX.sparkle(); if(!settings.reduce) confetti(50); },600);
+  }
+  document.getElementById('boothSubmit').addEventListener('click',function(){ runBooth(document.getElementById('boothInput').value); });
+  document.getElementById('boothInput').addEventListener('keydown',function(e){ if(e.key==='Enter') runBooth(this.value); });
+  document.getElementById('boothMic').addEventListener('click',function(){
+    var w=listen(function(text){ document.getElementById('boothInput').value=text; runBooth(text); });
+    if(!w){ document.getElementById('boothResult').textContent="Voice input isn't available on this browser — type it instead and tap Absorb It."; }
+  });
+  var bootyOn=false, bootyCount=0, lastMag=0, lastPeak=0, motionHandler=null;
+  var bootyCountEl=document.getElementById('bootyCount'), bootyStatus=document.getElementById('bootyStatus');
+  function bump(){
+    bootyCount++; bootyCountEl.textContent=bootyCount; SFX.drum(0); buzz(25);
+    if(bootyCount%10===0){ var c=pick(BOOTY); announce(bootyCount+'! '+c); speak(c,{pitch:1.1}); SFX.cheer(); confetti(70); }
+  }
+  function onMotion(e){
+    var a=e.accelerationIncludingGravity||e.acceleration; if(!a) return;
+    var mag=Math.sqrt((a.x||0)*(a.x||0)+(a.y||0)*(a.y||0)+(a.z||0)*(a.z||0));
+    var delta=Math.abs(mag-lastMag); lastMag=mag; var now=Date.now();
+    if(delta>6 && now-lastPeak>260){ lastPeak=now; bump(); }
+  }
+  function startBooty(){
+    if(bootyOn){ stopBooty(); document.getElementById('bootyStart').textContent='START COUNTING'; bootyStatus.textContent='Paused. Tap start to keep the party going.'; return; }
+    audio(); bootyCount=0; bootyCountEl.textContent='0';
+    function go(){ bootyOn=true; motionHandler=onMotion; window.addEventListener('devicemotion',motionHandler); document.getElementById('bootyStart').textContent='STOP'; bootyStatus.textContent='Counting! Move however feels good. The big WIGGLE button always works too.'; announce('Counting your moves now.'); }
+    if(typeof DeviceMotionEvent!=='undefined' && typeof DeviceMotionEvent.requestPermission==='function'){
+      DeviceMotionEvent.requestPermission().then(function(s){ if(s==='granted') go(); else { bootyStatus.textContent='Motion access off — no problem, use the WIGGLE button to count.'; } }).catch(function(){ bootyStatus.textContent='Motion sensor unavailable — use the WIGGLE button to count.'; });
+    } else if('ondevicemotion' in window){ go(); }
+    else { bootyStatus.textContent='No motion sensor here — the WIGGLE button has you covered.'; }
+  }
+  function stopBooty(){ bootyOn=false; if(motionHandler){ window.removeEventListener('devicemotion',motionHandler); motionHandler=null; } }
+  document.getElementById('bootyStart').addEventListener('click',startBooty);
+  document.getElementById('bootyTap').addEventListener('click',function(){ audio(); bump(); });
+  var mstream=null, mhypeTimer=null;
+  var video=document.getElementById('mirrorVideo'), mhype=document.getElementById('mirrorHype');
+  function mirrorHypeLoop(){ var m=pick(MIRROR); mhype.textContent=m; announce(m); speak(m,{pitch:1.05}); SFX.sparkle(); }
+  function startMirrorHype(){ if(mhypeTimer) clearInterval(mhypeTimer); mirrorHypeLoop(); mhypeTimer=setInterval(mirrorHypeLoop,4200); }
+  function startMirror(){
+    audio();
+    if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){ mhype.textContent='No camera here — running Audio only.'; startMirrorHype(); return; }
+    navigator.mediaDevices.getUserMedia({video:{facingMode:'user'},audio:false}).then(function(s){
+      mstream=s; video.srcObject=s; video.play&&video.play().catch(function(){}); startMirrorHype();
+      document.getElementById('mirrorStart').textContent='GLOW IS ON';
+    }).catch(function(){ mhype.textContent='Camera blocked — switching to Audio only, still gorgeous.'; startMirrorHype(); });
+  }
+  function startMirrorAudio(){ stopMirrorCam(); startMirrorHype(); }
+  function stopMirrorCam(){ if(mstream){ mstream.getTracks().forEach(function(t){ t.stop(); }); mstream=null; } video.srcObject=null; }
+  function stopMirror(){ stopMirrorCam(); if(mhypeTimer){ clearInterval(mhypeTimer); mhypeTimer=null; } var b=document.getElementById('mirrorStart'); if(b) b.textContent='TURN ON THE GLOW'; mhype.textContent='Tap below to glow.'; }
+  document.getElementById('mirrorStart').addEventListener('click',startMirror);
+  document.getElementById('mirrorAudio').addEventListener('click',startMirrorAudio);
+  function listen(cb){
+    var SR=window.SpeechRecognition||window.webkitSpeechRecognition; if(!SR) return false;
+    try{
+      var r=new SR(); r.lang='en-US'; r.interimResults=false; r.maxAlternatives=1;
+      r.onresult=function(ev){ var t=ev.results[0][0].transcript; cb(t); };
+      r.onerror=function(){};
+      r.start(); return true;
+    }catch(e){ return false; }
+  }
+  document.getElementById('voiceNav').addEventListener('click',function(){
+    audio(); announce('Listening. Say a mode.');
+    var ok=listen(function(text){
+      text=text.toLowerCase();
+      if(/fire|hype|cannon|blast/.test(text)){ fireHype(); }
+      else if(/slot|lever|jackpot/.test(text)){ show('slot'); }
+      else if(/strut|walk|runway/.test(text)){ show('strut'); }
+      else if(/rave|disco|dance/.test(text)){ show('rave'); }
+      else if(/booth|shame|insecur/.test(text)){ show('booth'); }
+      else if(/boot|wiggle|twerk|metronome/.test(text)){ show('booty'); }
+      else if(/mirror|glow|camera/.test(text)){ show('mirror'); }
+      else { var m="Didn't catch a mode in that. Try fire, slot, strut, rave, booth, booty, or mirror."; announce(m); speak(m); }
+    });
+    if(!ok){ var m="Voice navigation isn't supported on this browser, but every mode is one tap away below."; announce(m); speak(m); }
+  });
+  var sheet=document.getElementById('settingsSheet');
+  function openSet(){ sheet.classList.add('open'); document.getElementById('closeSettings').focus(); }
+  function closeSet(){ sheet.classList.remove('open'); document.getElementById('openSettings').focus(); }
+  document.getElementById('openSettings').addEventListener('click',openSet);
+  document.getElementById('closeSettings').addEventListener('click',closeSet);
+  sheet.addEventListener('click',function(e){ if(e.target===sheet) closeSet(); });
+  document.querySelectorAll('[data-set]').forEach(function(sw){
+    var key=sw.getAttribute('data-set'); sw.setAttribute('aria-checked', settings[key]?'true':'false');
+    sw.addEventListener('click',function(){
+      var v=!settings[key]; settings[key]=v; sw.setAttribute('aria-checked',v?'true':'false');
+      store.set('br_'+(key==='reduce'?'reduce':key), v?(key==='reduce'?'on':'on'):(key==='reduce'?'off':'off'));
+      if(key==='reduce'){ store.set('br_reduce', v?'on':'off'); applyReduce(); }
+      if(key==='voice' && !v && synth) synth.cancel();
+    });
+  });
+  document.addEventListener('pointerdown',function once(){ audio(); document.removeEventListener('pointerdown',once); },{once:true});
+})();
+</script>
+</body>
+</html>
